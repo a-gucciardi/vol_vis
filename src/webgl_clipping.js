@@ -9,7 +9,7 @@ let clock;
 
 const params = {
 
-    animate: true,
+    animate: false,
     planeX: {
 
         constant: 0,
@@ -109,12 +109,13 @@ function init() {
     planeHelpers = planes.map( p => new THREE.PlaneHelper( p, 2, 0xffffff ) );
     planeHelpers.forEach( ph => {
 
-        ph.visible = false;
+        ph.visible = true;
         scene.add( ph );
 
     } );
 
-    const geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 220, 60 );
+    const geometry = new THREE.TorusGeometry( 0.2, 0.15, 220, 60 ); 
+    // const geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 220, 60 );
     object = new THREE.Group();
     scene.add( object );
 
@@ -174,7 +175,7 @@ function init() {
 
     // add the color
     const clippedColorFront = new THREE.Mesh( geometry, material );
-    clippedColorFront.castShadow = true;
+    clippedColorFront.castShadow = false;
     clippedColorFront.renderOrder = 6;
     object.add( clippedColorFront );
 

@@ -57,7 +57,7 @@ function init() {
     helper.visible = false
     scene.add(helper)
 
-    new NRRDLoader().load( 'nrrd/converted_4200_T2.nrrd', function ( volume ) {
+    new NRRDLoader().load( 'converted_4200_T2.nrrd', function ( volume ) {
         // helper
         const geometry = new THREE.BoxGeometry( volume.xLength, volume.yLength, volume.zLength )
         const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
@@ -122,7 +122,7 @@ function init() {
         render();
 
     } );
-    new NRRDLoader().load( 'nrrd/converted_4200_T2.nrrd', function ( volume ) {
+    new NRRDLoader().load( 'converted_4200_T2.nrrd', function ( volume ) {
         volconfig = { Color_lim1: 0, Color_lim2: 1, renderstyle: 'iso', isothreshold: 0.15, colormap: 'gray' }
         // console.log(volume.data)
         const texture = new THREE.Data3DTexture( volume.data, volume.xLength, volume.yLength, volume.zLength )

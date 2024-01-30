@@ -14,6 +14,7 @@ material,
 volconfig,
 cmtextures,
 obj;
+let annotationsArray, result
 
 init();
 animate();
@@ -39,7 +40,7 @@ function init() {
     const aspect = window.innerWidth / window.innerHeight
     camera = new THREE.OrthographicCamera( - h * aspect / 2, h * aspect / 2, h / 2, - h / 2, 1, 500 )
     camera.up.set( 0, 1, 0 ) // In our data, z is up
-    camera.position.set(10, 10, 100)
+    camera.position.set(35, 20, 90)
 
     // Create controls
     controls = new OrbitControls( camera, renderer.domElement )
@@ -60,6 +61,7 @@ function init() {
     new NRRDLoader().load( 'converted_4200_T2.nrrd', function ( volume ) {
         // helper
         const geometry = new THREE.BoxGeometry( volume.xLength, volume.yLength, volume.zLength )
+        // console.log(geometry)
         const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
         const cube = new THREE.Mesh( geometry, material )
         const box = new THREE.BoxHelper( cube )
@@ -136,6 +138,8 @@ function init() {
         const matos = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
         const cube = new THREE.Mesh( geom, matos )
         const box = new THREE.BoxHelper( cube )
+        // console.log(geom)
+        // console.log(box)
         box.applyMatrix4( volume.matrix )
         scene.add( box )
         box.visible = false
@@ -164,7 +168,7 @@ function init() {
             uniforms: uniforms,
             vertexShader: shader.vertexShader,
             fragmentShader: shader.fragmentShader,
-            side: THREE.BackSide // The volume shader uses the backface as its "reference point",
+            side: THREE.BackSide // The volume shader uses the backface as its "reference points",
         } );
 
         // THREE.Mesh
@@ -217,30 +221,46 @@ function init() {
 
     } );
 
-    // Annotations
 
-    const vertices = new Float32Array( [
-        5, 70, 45,      // p1.0  0
-        5, -70, 45,     // p1.1  1
-        7, 70, 10,      // p2.0  2
-        7, -70, 10,     // p2.1  3
-        7, 70, -45,     // p3.0  4 
-        8, -70, -45,    // p3.1  5        
-    ] )
-    const indices = [
-        0, 1, 2,
-        1, 2, 3,
-        3, 4, 5,
-        3, 4, 2
-    ]
-    const createAnnots = (vertices, indices) => {
-        let geometrys = new THREE.BufferGeometry()
-        geometrys.setIndex(indices)
-        // itemSize = 3 because there are 3 values (components) per vertex
-        geometrys.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
-        let materials = new THREE.MeshBasicMaterial( { color: 0xff0000 , side: THREE.DoubleSide })
-        return new THREE.Mesh( geometrys, materials )
-    }
+    // Annotations
+    // Old 
+    // const vertices = new Float32Array( [
+    //     5, 70, 50,      // p1.0  0
+    //     5, -70, 45,     // p1.1  1
+    //     7, 70, 10,      // p2.0  2
+    //     7, -70, 10,     // p2.1  3
+    //     7, 70, -50,     // p3.0  4 
+    //     8, -70, -45,    // p3.1  5        
+    // ] )
+
+    // // indices to build the plans 
+    // const indices = [
+    //     0, 1, 2,
+    //     1, 2, 3,
+    //     3, 4, 5,
+    //     3, 4, 2
+    // ]
+    // // // used to create the connecting planes between the annotation depths
+    // const createAnnots = (vertices, indices) => {
+    //     let geometrys = new THREE.BufferGeometry()
+    //     geometrys.setIndex(indices)
+    //     // itemSize = 3 because there are 3 values (components) per vertex
+    //     geometrys.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+    //     let materials = new THREE.MeshBasicMaterial( { color: 0xff0000 , side: THREE.DoubleSide })
+    //     // materials.wireframe = true
+    //     return new THREE.Mesh( geometrys, materials )
+    // }
+    
+    // const createLine = (vertices) => {
+    //     let geometrys = new THREE.BufferGeometry()
+    //     geometrys.setIndex(indices)
+    //     // itemSize = 3 because there are 3 values (components) per vertex
+    //     geometrys.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+    //     let materials = new THREE.MeshBasicMaterial( { color: 0xff0000 , side: THREE.DoubleSide })
+    //     // materials.wireframe = true
+    //     return new THREE.Mesh( geometrys, materials )
+    // }
+
     // used to create larger annotations on depths of interest
     const createPlane = (width, length) => {
         let planeGeometry = new THREE.PlaneGeometry(width, length)
@@ -251,23 +271,60 @@ function init() {
         })
         return new THREE.Mesh(planeGeometry, material)
       }
-
-    let planeAnnot = createAnnots(vertices, indices)
+    
+    // Annotations new w read json
     let plane3D = new THREE.Object3D()
-    plane3D.add(planeAnnot)
     plane3D.opacity = 0.4
     plane3D.renderOrder = 2
-    
-    let face1 = createPlane(4, 140); let face2 = createPlane(4, 140); let face3 = createPlane(4, 140)
-    face1.position.set(vertices[0], 0, vertices[2])
-    face2.position.set(vertices[6], 0, vertices[8])
-    face3.position.set(vertices[12], 0, vertices[14])
-    // face1.opacity = 0.4
-    // face2.opacity = 0.4
-    // face3.opacity = 0.4
+    // let planeAnnot = createAnnots(vertices, indices)
+    // planeAnnot.opacity = 0
+    // plane3D.add(planeAnnot)
+    let readAnnot = (json) => {
+        // console.log(typeof json)
+        const vertices1 = []
+        annotationsArray = json.annotations;
+        // console.log(annotationsArray);
+        for (let i = 0; i < annotationsArray.length; i++) {
+            // console.log(annotationsArray[i]);
+            // to transform z values from range [0,203] to [-50.75, 50.75] : z' = (z * 101.5) / 203 - 50.75 
+            let z1 = annotationsArray[i].points.z1 
+            let z2 = annotationsArray[i].points.z2
+            vertices1.push(annotationsArray[i].points.x1, annotationsArray[i].points.y1, z1*101.5/203 - 50.75)
+            vertices1.push(annotationsArray[i].points.x2, annotationsArray[i].points.y2, z2*101.5/203 - 50.75)
+        }
+        return vertices1
+    }
+        
+    fetch("annot_sample.json")
+        .then(response => response.json())
+        .then(json => {
+            result = readAnnot(json)
+            // vertices array[18] : (x1, y1, z1, x2, y2, z2 )* 3
+            console.log(result)
 
-    plane3D.add(face1, face2, face3)
-    scene.add(plane3D)
+            let face1 = createPlane(4, 140); let face2 = createPlane(4, 140); let face3 = createPlane(4, 140)
+            // planes are drawn as stragiht vertical lines from the x1 only
+            face1.position.set(result[0], 0, result[2])
+            face2.position.set(result[6], 0, result[8])
+            face3.position.set(result[12], 0, result[14])
+            // face1.opacity = 0.2
+            // face2.opacity = 0.2
+            // face3.opacity = 0.2
+
+            // attempt at drawing line instead of straight planes -> too thin 
+            // const points = []
+            // points.push( new THREE.Vector3( result[0], result[1], result[2] ) );
+            // points.push( new THREE.Vector3( result[3], result[4], result[5] ) );
+            // points.push( new THREE.Vector3( result[6], result[7], result[8] ) );
+            // const geometryLine = new THREE.BufferGeometry().setFromPoints( points );
+            // const materialLine = new THREE.LineBasicMaterial( { color: 0x0000ff, linewidth: 10 } );
+            // const line = new THREE.Line( geometryLine, materialLine );
+            // scene.add(line)
+            plane3D.add(face1, face2, face3)
+            scene.add(plane3D)
+            return result 
+        })
+
     const annots = gui.addFolder( 'Annotations' )
     const visibilityControlA = { visible: true }
     annots.add( visibilityControlA, 'visible' ).name( 'Annotations Visible' ).onChange( function () {

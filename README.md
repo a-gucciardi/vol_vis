@@ -25,6 +25,7 @@ Install [Vite](https://vitejs.dev/), a development server with live reload capab
     
     ```
       npm create vite@latest
+      npm install --save three   # install three.js 
     ```
 
   - To run (from your local directory):

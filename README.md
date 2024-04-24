@@ -1,5 +1,7 @@
 # [volume-viewer](https://volumeview-20a44.web.app/)
 
+<img src="src/screenshot.png" width="1000" height="550" />
+
 # Table of Contents <a name="tableOfContents"></a>
 
 1. [Introduction](#introduction)
@@ -12,30 +14,25 @@
 
 WebGL MRI volume visualization with THREE.js 
 
-Volumes located in src/nrrd have been previously converted from Nifti(.nii) to Nrrd format.  
-
+Volumes located in src/nrrd have been previously [converted](http://www.itksnap.org/pmwiki/pmwiki.php?n=Convert3D.Convert3D) from Nifti(.nii) to Nrrd format.  
 
 
 ## Run the project locally <a name="#runLocally"></a>
 
-[Node.js](https://nodejs.org/en/), v 20.1 was used for development.
+[Node.js](https://nodejs.org/en/), v 20.1 was used for development.  
 Install [Vite](https://vitejs.dev/), a development server with live reload capability.
 
   - To install:
     
     ```
-      npm create vite@latest
-      npm install --save three   # install three.js 
+      npm i vite    # install vite
+      npm i three   # install three.js 
     ```
 
-  - To run (from your local directory):
+  - To run (from the src directory):
         
     ```
-      npm run dev
-    ```
-  - And then move to src subfolder: 
-        
-    ```
+      cd src
       npx vite
     ```
 
@@ -44,7 +41,6 @@ This runs the *index.html* with the javascript and three js components from *scr
 ## Deployment - Live Website <a name="#deploymentLiveWebsite"></a>
 
 [volume-viewer](https://volumeview-20a44.web.app/) live website is currently deployed on [Firebase](https://firebase.google.com/), following vite [doc](https://vitejs.dev/guide/static-deploy.html#google-firebase).
-
 
 
 ## Credits <a name="credits"></a>

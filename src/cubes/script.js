@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 85, window.innerWidth / window.innerHeight, 0.01, 100 );
+const camera = new THREE.PerspectiveCamera( 85, window.innerWidth / window.innerHeight, 0.01, 1000 );
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor(0xffffff);
+renderer.setClearColor(0x000000);
 document.body.appendChild( renderer.domElement );
 
 const controls = new OrbitControls( camera, renderer.domElement );
@@ -47,17 +48,13 @@ boxes.forEach((x, indexX) => {
         });
     });
 });
-
 // logs
 console.log(cube.position)
 console.log(brainBox.position)
 console.log(line)
-// boxes.forEach((value, index, number) => {
-//     console.log(value, index ) // value = index atm because of the Array(5)
-// })
-
 camera.position.set(boxes.length / 2, boxes.length / 2, boxes.length + 5)
-// camera.lookAt(0,0,0)
+camera.lookAt(0,0,0)
+// camera.position.set(50, 50, 50)
 
 function animate() {
 	renderer.render( scene, camera );

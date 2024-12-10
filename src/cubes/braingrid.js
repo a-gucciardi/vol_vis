@@ -19,9 +19,9 @@ const fileNames = [
     'p1.ply',
     'stp_r15.ply',
     'stp_r50.ply',
-    'p0.ply',
-    'p0.ply',
-    'p0.ply'
+    '10_Left-Thalamus.ply',
+    '11_Left-Caudate.ply',
+    '13_Left-Pallidum.ply'
 ];
 
 // Function to create a viewport
@@ -51,6 +51,8 @@ function createViewport(file) {
         0.01,
         1000
     );
+    camera.zoom = 0.5
+    console.log(camera)
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(viewportDiv.clientWidth, viewportDiv.clientHeight);
@@ -77,21 +79,23 @@ function createViewport(file) {
             wireframe: false
         });
         const brainMesh = new THREE.Mesh(brainGeo, brainMat);
-
+        console.log(brainMesh.geometry.boundingBox)
+        
         // current size
         const boundingBox = brainGeo.boundingBox;
         const size = new THREE.Vector3();
         boundingBox.getSize(size);
+        // console.log(size)
         // max -> fit to 50^3
         const maxDimension = Math.max(size.x, size.y, size.z);
         const scaleFactor = 50 / maxDimension;
-        brainMesh.scale.multiplyScalar(scaleFactor);
+        // brainMesh.scale.multiplyScalar(scaleFactor);
 
         // Center the mesh
         const center = new THREE.Vector3();
         boundingBox.getCenter(center);
         center.multiplyScalar(-scaleFactor); // Adjust center based on scale
-        brainMesh.position.copy(center);
+        // brainMesh.position.copy(center);
 
         scene.add(brainMesh);
 
@@ -104,7 +108,7 @@ function createViewport(file) {
     });
 
     camera.lookAt(0, 0, 0);
-    camera.position.set(50, 50, 50);
+    camera.position.set(50, 150, 0);
 
     // Handle resize for this viewport
     function onResize() {

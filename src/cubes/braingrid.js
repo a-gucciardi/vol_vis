@@ -46,13 +46,13 @@ function createViewport(file) {
     scene.add(directionalLight1, directionalLight1);
 
     const camera = new THREE.PerspectiveCamera(
-        85,
+        70,
         (window.innerWidth/4) / (window.innerHeight/2),
-        0.01,
+        1,
         1000
     );
     camera.zoom = 0.5
-    console.log(camera)
+    // console.log(camera)
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(viewportDiv.clientWidth, viewportDiv.clientHeight);
@@ -60,10 +60,13 @@ function createViewport(file) {
     viewportDiv.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping=true
+    controls.damping=0.2
 
     // PLY loading
     const loader = new PLYLoader();
     loader.load(`./volumes/${file}`, function(brainGeo) {
+        console.log(brainGeo)
         brainGeo.computeVertexNormals();
         brainGeo.computeBoundingBox();
 
@@ -74,12 +77,12 @@ function createViewport(file) {
         const brainMat = new THREE.MeshPhongMaterial({ 
             map: texture,
             transparent: false,
-            opacity: 0.1,
+            // opacity: 1,
             shininess: 1,
-            wireframe: false
+            wireframe: true
         });
         const brainMesh = new THREE.Mesh(brainGeo, brainMat);
-        console.log(brainMesh.geometry.boundingBox)
+        console.log(brainMesh)
         
         // current size
         const boundingBox = brainGeo.boundingBox;
@@ -87,24 +90,41 @@ function createViewport(file) {
         boundingBox.getSize(size);
         // console.log(size)
         // max -> fit to 50^3
-        const maxDimension = Math.max(size.x, size.y, size.z);
-        const scaleFactor = 50 / maxDimension;
+        // const maxDimension = Math.max(size.x, size.y, size.z);
+        // const scaleFactor = 50 / maxDimension;
         // brainMesh.scale.multiplyScalar(scaleFactor);
-
         // Center the mesh
         const center = new THREE.Vector3();
         boundingBox.getCenter(center);
-        center.multiplyScalar(-scaleFactor); // Adjust center based on scale
+        // center.multiplyScalar(-scaleFactor); // Adjust center based on scale
         // brainMesh.position.copy(center);
 
-        scene.add(brainMesh);
+        // bounding box geometry using the dimensions of the bounding box
+        const boxGeometry = new THREE.BoxGeometry(size.x, size.y, size.z);
+        const boxMesh = new THREE.Mesh(
+            boxGeometry,
+            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+        );
+        boxMesh.position.copy(center);
+        // Create a bounding sphere geometry with radius based on the max dimension
+        const radius = Math.max(size.x, size.y, size.z) / 2;
+        const sphereGeometry = new THREE.SphereGeometry(radius);
+        const sphereMesh = new THREE.Mesh(
+            sphereGeometry,
+            new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true })
+        );
+        sphereMesh.position.copy(center);
 
-        console.log(`Viewport - Scale factor:`, scaleFactor);
-        console.log(`Viewport - Scaled dimensions:`, {
-            width: size.x * scaleFactor,
-            height: size.y * scaleFactor,
-            depth: size.z * scaleFactor
-        });
+        scene.add(brainMesh);
+        scene.add(boxMesh);
+        // scene.add(sphereMesh);
+
+        // console.log(`Viewport - Scale factor:`, scaleFactor);
+        // console.log(`Viewport - Scaled dimensions:`, {
+        //     width: size.x * scaleFactor,
+        //     height: size.y * scaleFactor,
+        //     depth: size.z * scaleFactor
+        // });
     });
 
     camera.lookAt(0, 0, 0);

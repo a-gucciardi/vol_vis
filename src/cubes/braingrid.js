@@ -13,15 +13,26 @@ container.style.height = '100vh';
 container.style.backgroundColor = '#000';
 document.body.appendChild(container);
 
+// old file names with poly tries from nii2mesh
+// const fileNames = [
+//     'p1_stp.ply',
+//     'p0_stp.ply',
+//     'p1.ply',
+//     'stp_r15.ply',
+//     'stp_r50.ply',
+//     '10_Left-Thalamus.ply',
+//     '11_Left-Caudate.ply',
+//     '13_Left-Pallidum.ply'
+// ];
 const fileNames = [
-    'p1_stp.ply',
-    'p0_stp.ply',
-    'p1.ply',
-    'stp_r15.ply',
-    'stp_r50.ply',
     '10_Left-Thalamus.ply',
     '11_Left-Caudate.ply',
-    '13_Left-Pallidum.ply'
+    '11_Left-Putamen.ply',
+    '13_Left-Pallidum.ply',
+    '41_Right-Cerebral-White-Matter.ply',
+    '42_Right-Cerebral-Cortex.ply',
+    '43_Right-Lateral-Ventricle.ply',
+    '44_Right-Inf-Lat-Vent.ply'
 ];
 
 // Function to create a viewport
@@ -79,7 +90,7 @@ function createViewport(file) {
             transparent: false,
             // opacity: 1,
             shininess: 1,
-            wireframe: true
+            wireframe: false
         });
         const brainMesh = new THREE.Mesh(brainGeo, brainMat);
         console.log(brainMesh)

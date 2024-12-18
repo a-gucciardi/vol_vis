@@ -61,7 +61,7 @@ function init() {
     const container = document.getElementById('container'); //html ref
     scene = new THREE.Scene();
 
-    new NRRDLoader().load('nrrd/converted_4200_T2.nrrd', function (volume) {
+    new NRRDLoader().load('testdata.nrrd', function (volume) {
         // #1 : 3D volume
         volconfig = {renderstyle: 'iso', isothreshold: 0.15, colormap: 'gray' }
 

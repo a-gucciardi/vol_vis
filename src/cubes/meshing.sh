@@ -1,4 +1,5 @@
 #!/bin/bash
+# limitation : does not save position information
 for file in ./synthseg/nifti7*.nii.gz; do
     base_name=$(basename "$file" | cut -d. -f1)
     echo "Processing: $file , basename : $base_name"

@@ -64,8 +64,8 @@ function createViewport(file) {
         const material = new THREE.MeshPhongMaterial({
             map: texture,
             transparent: false,
-            opacity: 0.8,
-            shininess: 10,
+            opacity: 0.1,
+            shininess: 100,
             wireframe: false
         });
 
